@@ -12,7 +12,7 @@ from ai_car.dynamixel_wheel import Wheel_Controller
 BAUD_RATE = 1000000
 DXL_PORT = PortHandler('/dev/U2D2')
 
-WHEEL_SEPERATION_X = 0.08
+WHEEL_SEPERATION = 0.08
 LIMIT_VEL = 200
 
 VELOCITY2VALUE = 41.69988758
@@ -46,6 +46,7 @@ class AICAR_BASE:
         joint_state = JointState()
         joint_state.name = ['wheel_left_joint','wheel_right_joint','wheel_rear_left_joint', 'wheel_rear_right_joint',
                             'arm_joint_1', 'arm_joint_2', 'tool_joint']
+        diff_rad_pub = rospy.Publisher("/diff_rad", Float32MultiArray, queue_size=10)
 
         self.torque_data = 0
         self.tool_data = 0.0
@@ -60,6 +61,7 @@ class AICAR_BASE:
         self.state_is_reset = False
         self.last_left = self.last_right = self.last_rear_left = self.last_rear_right = 0
         self.diff_left = self.diff_right = self.diff_rear_left = self.diff_rear_right = 0
+        self.total_left = self.total_right = self.total_rear_left = self.total_rear_right = 0
 
         rate = rospy.Rate(30)
 
@@ -68,9 +70,14 @@ class AICAR_BASE:
             self.fn_update_state()
 
             joint_state.header.stamp = rospy.Time.now()
-            joint_state.position = [self.diff_left, self.diff_right, self.diff_rear_left, self.diff_rear_right,
+            joint_state.position = [self.total_left, self.total_right, self.total_rear_left, self.total_rear_right,
                                     self.arm_state[0], self.arm_state[1], self.arm_state[2]]
             joint_state_pub.publish(joint_state)
+
+            diff_rad = Float32MultiArray()
+            diff_rad.data.append(self.diff_left)
+            diff_rad.data.append(self.diff_right)
+            diff_rad_pub.publish(diff_rad)
 
             if self.tool_received: 
                 self.arm.set_tool(self.tool_data)
@@ -113,33 +120,38 @@ class AICAR_BASE:
         self.diff_left = (current - self.last_left) * XM_TICK2RAD
         self.last_left = current
         if abs(self.diff_left) <= 2 * XM_TICK2RAD: self.diff_left = 0.0
+        self.total_left += self.diff_left
         
         current = self.wheel_state[1]
         self.diff_right = (current - self.last_right) * XM_TICK2RAD
         self.last_right = current
         if abs(self.diff_right) <= 2 * XM_TICK2RAD: self.diff_right = 0.0
+        self.total_right += self.diff_right
 
         current = self.wheel_state[2]
         self.diff_rear_left = (current - self.last_rear_left) * XM_TICK2RAD
         self.last_rear_left = current
         if abs(self.diff_rear_left) <= 2 * XM_TICK2RAD: self.diff_rear_left = 0.0
+        self.total_rear_left += self.diff_rear_left
 
         current = self.wheel_state[3]
         self.diff_rear_right = (current - self.last_rear_right) * XM_TICK2RAD
         self.last_rear_right = current
         if abs(self.diff_rear_right) <= 2 * XM_TICK2RAD: self.diff_rear_right = 0.0
+        self.total_rear_right += self.diff_rear_right
 
     def fn_shutdown(self):
         rospy.loginfo('Exiting ...')
         self.arm.reset()
         self.wheel.set_velocity([0,0])
-        time.sleep(3)
+        rospy.sleep(3)
         self.arm.set_torque(0)
         self.wheel.set_torque(0)
         DXL_PORT.closePort()
 
     def cb_reset(self, msg):
         rospy.loginfo('[ SET ] AICAR reset')
+        self.total_left = self.total_right = self.total_rear_left = self.total_rear_right = 0
         self.state_is_reset = False
         self.reset_received = True
 
@@ -165,8 +177,8 @@ class AICAR_BASE:
             lin_vel = msg.linear.x
             ang_vel = msg.angular.z
 
-            left_vel = lin_vel - ang_vel * WHEEL_SEPERATION_X / 2
-            right_vel = lin_vel + ang_vel * WHEEL_SEPERATION_X / 2
+            left_vel = lin_vel - ang_vel * WHEEL_SEPERATION / 2
+            right_vel = lin_vel + ang_vel * WHEEL_SEPERATION / 2
 
             left_vel = left_vel * VELOCITY2VALUE / 0.033
             right_vel = right_vel * VELOCITY2VALUE / 0.033

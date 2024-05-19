@@ -3,11 +3,12 @@
 import rospy, tf
 from math import sin, cos
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Imu, JointState
+from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Point, Quaternion, Twist
-from std_msgs.msg import Empty
+from std_msgs.msg import Empty, Float32MultiArray
 from tf.transformations import quaternion_from_euler
 
+XM_TICK2RAD = 0.001533981
 WHEEL_RADIUS = 0.033
 WHEEL_SEPARATION = 0.08
 
@@ -15,7 +16,7 @@ class AICAR_ODOM:
     def __init__(self):
 
         rospy.wait_for_message("/imu", Imu)
-        rospy.Subscriber("/joint_states", JointState, self.cb_joint_states)
+        rospy.Subscriber("/diff_rad", Float32MultiArray, self.cb_calc_odom)
         rospy.Subscriber("/imu", Imu, self.cb_imu)
         rospy.Subscriber("/reset", Empty, self.cb_reset)
         
@@ -45,15 +46,15 @@ class AICAR_ODOM:
         self.imu_ang = msg.angular_velocity.z
         self.imu_is_reset = True
 
-    def cb_joint_states(self, msg):
+    def cb_calc_odom(self, msg):
         if self.imu_is_reset:
             current_time = rospy.Time.now()
 
             dt = (current_time - self.last_time).to_sec()
 
             # calc l r distance
-            l_distance = msg.position[0] * WHEEL_RADIUS
-            r_distance = msg.position[1] * WHEEL_RADIUS
+            l_distance = msg.data[0] * WHEEL_RADIUS
+            r_distance = msg.data[1] * WHEEL_RADIUS
 
             # calc linear & angular
             lin = (l_distance + r_distance) / (2.0 * dt)
@@ -94,3 +95,4 @@ if __name__ == "__main__":
 
     except rospy.ROSInterruptException:
         pass
+
