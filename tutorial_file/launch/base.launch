@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="aicar_base" pkg="ai_car_tutorial" type="aicar_base.py" output="screen"/>
+    <node name="aicar_imu" pkg="ai_car_tutorial" type="aicar_imu.py" output="screen"/>
+    <node name="aicar_odom" pkg="ai_car_tutorial" type="aicar_odom.py" output="screen"/>
+</launch>
