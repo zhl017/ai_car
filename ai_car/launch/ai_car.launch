@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find ai_car)/launch/car.launch"/>
+    <include file="$(find ai_car)/launch/base.launch"/>
     <include file="$(find ai_car)/launch/camera.launch"/>
     <include file="$(find ai_car)/launch/rplidar.launch"/>
 </launch>
