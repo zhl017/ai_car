@@ -1,0 +1,34 @@
+#!/bin/bash
+
+echo ""
+echo "Install rplidar-ros"
+echo ""
+
+sudo apt install ros-noetic-rplidar-ros -y
+
+echo ""
+echo "Install modules RTIMU"
+echo ""
+
+roscd ai_car
+git clone https://github.com/andrasj/RTIMULib2.git
+cd RTIMULib2/Linux/python/
+python3 setup.py build
+sudo python3 setup.py install
+
+echo ""
+echo "Up the aicar usb & i2c connection."
+echo ""
+
+sudo cp `rospack find ai_car`/99-aicar.rules /etc/udev/rules.d/
+
+echo ""
+echo "Reload rules"
+echo ""
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+cd `rospack find ai_car`/../..
+source devel/setup.bash
+
+exec bash
