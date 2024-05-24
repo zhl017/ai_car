@@ -33,7 +33,7 @@ source ~/catkin_ws/devel/setup.bash
 cd ~/catkin_ws/src/ai_car && bash install_ai_car
 ```
 
-6. 待 PC 端 `ROS MASTER` 運行後使用 `roslaunch` 運行車子
+6. 待 PC 端 `ROS Master` 運行後使用 `roslaunch` 運行車子
 
 ```
 roslaunch ai_car ai_car.launch
@@ -95,7 +95,7 @@ roslaunch ai_car display.launch
 
 ### SLAM
 
-> 請確定 PC 正常運行 ROS MASTER 及 車子正在運行 ai_car.launch
+> 請確定 PC 正常運行 ROS Master 及 車子正在運行 ai_car.launch
 
 > 若運行過程中出現錯誤顯示未找到套件,請使用指令 sudo apt install ros-noetic-套件名稱 進行安裝
 > ex. 
@@ -125,7 +125,7 @@ rosrun map_server map_saver -f ~/map
 
 ### 導航
 
-> 請確定 PC 正常運行 ROS MASTER 及 車子正在運行 ai_car.launch
+> 請確定 PC 正常運行 ROS Master 及 車子正在運行 ai_car.launch
 
 > 若運行過程中出現錯誤顯示未找到套件,請使用指令 sudo apt install ros-noetic-套件名稱 進行安裝
 > ex. 
