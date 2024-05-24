@@ -5,14 +5,19 @@ from std_msgs.msg import Empty
 
 class MPU9250:
     def __init__(self):
-        rospy.Subscriber("/reset", Empty, self.cb_reset)
 
-        imu_pub = rospy.Publisher("/imu", Imu, queue_size=10)
+        """
+
+        try to setup pub & sub
+     
+        """
+
+        # create imu message
         imu_data = Imu()
 
         rate = rospy.Rate(200)
 
-        s = RTIMU.Settings("/home/ubuntu/catkin_ws/src/ai_car/scripts/RTIMULib")
+        s = RTIMU.Settings("/home/ubuntu/catkin_ws/src/ai_car_tutorial/scripts/RTIMULib")
         self.imu = RTIMU.RTIMU(s)
         rospy.loginfo("IMU Name: " + self.imu.IMUName())
         if (not self.imu.IMUInit()):
@@ -25,26 +30,21 @@ class MPU9250:
         self.imu.setAccelEnable(True)
         self.imu.setCompassEnable(True)
 
-        self.last_ang = 0
-
         while not rospy.is_shutdown():
             if self.imu.IMURead():
+                # mpu9250 get imudata
                 data = self.imu.getIMUData()
                 Pose = data["fusionPose"]
                 QPose = data["fusionQPose"]
                 gyro = data["gyro"]
                 accel = data["accel"]
 
-                imu_data.header.stamp = rospy.Time.now()
-                imu_data.header.frame_id = "imu"
-                
-                ang = gyro[2]
-                if abs(ang) <= 0.003 or abs(ang) >= 2: ang = 0
-                imu_data.angular_velocity.z = -ang
+                """
 
-                imu_pub.publish(imu_data)
+                try to pub imu data
 
-                self.last_ang = ang
+                """
+
                 rate.sleep()
 
     def cb_reset(self, msg):
