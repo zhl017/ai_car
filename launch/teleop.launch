@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="aicar_teleop" pkg="ai_car" type="aicar_teleop.py" output="screen"/>
+
+</launch>
