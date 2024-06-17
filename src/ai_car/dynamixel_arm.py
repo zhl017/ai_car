@@ -12,12 +12,14 @@ AX_GOAL_POSITION = 30
 AX_MOVING_SPEED = 32
 AX_PRESENT_POSITION = 36
 
-ARM_JOINT_1 = 11            # 812 ~ 512     0.0 ~ 1.57
-ARM_JOINT_2 = 12            # 212 ~ 512     -1.57 ~ 0.0
-ARM_TOOL = 13               # 420 ~ 670     -0.47 ~ 0.79
+ARM_JOINT_1 = 11            # 812 ~ 512     1.57 - 0.0
+ARM_JOINT_2 = 12            # 512 - 212     0.0 - -1.57
+ARM_TOOL = 13               # 450 - 612    -0.32 - 0.51
 
-HOME_POSE = [1.57, -1.57]   # 812, 212
-HOME_TOOl = 0.80
+HOME_POSE = [0.0, 0.0]
+
+SLEEP_POSE = [1.57, -1.57]
+SLEEP_TOOl = 0.51
 
 AX_TICK2RAD = 0.005113269      # 300 / 1024 / 180 * pi
 
@@ -34,9 +36,9 @@ class Arm_Controller():
         self.reset()
 
     def reset(self):
-        self.set_joint(HOME_POSE)
-        self.set_tool(HOME_TOOl)
-
+        self.set_joint(SLEEP_POSE)
+        self.set_tool(SLEEP_TOOl)
+        
     def set_torque(self, set_data):
         set_data = np.int32(set_data)
         self.packet.write1ByteTxRx(self.port, ARM_JOINT_1, AX_TORUQE_ADDRESS, set_data)
@@ -82,18 +84,13 @@ if __name__ == '__main__':
 
     arm = Arm_Controller(DXL_PORT)
 
-    arm.set_led(0)
-    time.sleep(1)
+    # arm.set_led(0)
+    # time.sleep(1)
+    # arm.set_led(1)
+    # time.sleep(1)
 
-    arm.set_led(1)
-    time.sleep(1)
-
-    arm.set_joint([0, 0])
-    arm.set_tool(-0.5)
-    time.sleep(2)
-
-    arm.set_joint([0.7, -0.7])
-    arm.set_tool(0.5)
+    arm.set_joint(HOME_POSE)
+    arm.set_tool(-0.32)
     time.sleep(2)
 
     arm.reset()
