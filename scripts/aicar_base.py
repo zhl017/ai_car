@@ -12,7 +12,7 @@ from ai_car.dynamixel_wheel import Wheel_Controller
 BAUD_RATE = 1000000
 DXL_PORT = PortHandler('/dev/U2D2')
 
-WHEEL_SEPERATION = 0.08
+WHEEL_SEPERATION = 0.16
 LIMIT_VEL = 200
 
 VELOCITY2VALUE = 41.69988758
@@ -39,7 +39,7 @@ class AICAR_BASE:
         rospy.Subscriber("/reset", Empty, self.cb_reset)
         rospy.Subscriber("/torque", Int8, self.cb_torque)
         rospy.Subscriber("/tool", Float32, self.cb_tool)
-        rospy.Subscriber("/joint", Float32MultiArray, self.cb_joint)
+        rospy.Subscriber("/arm", Float32MultiArray, self.cb_joint)
         rospy.Subscriber("/cmd_vel", Twist, self.cb_cmd)
 
         joint_state_pub = rospy.Publisher("/joint_states", JointState, queue_size=10)
