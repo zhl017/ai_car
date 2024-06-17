@@ -17,8 +17,8 @@ MIN_J1_RAD = 0.0
 MAX_J2_RAD = 0.0
 MIN_J2_RAD = -1.57
 
-MAX_TOOL_RAD = 0.79
-MIN_TOOL_RAD = -0.47
+MAX_TOOL_RAD = 0.51
+MIN_TOOL_RAD = -0.32
 
 STEP_ARM = 0.03
 
@@ -36,7 +36,8 @@ Arm control:
      Tool  : m(-), ,(+)
 
 h : Arm Home Pose
-s : force stop
+g : Arm Sleep Pose
+s : Force Stop
 
 CTRL-C to quit
 """
@@ -52,7 +53,7 @@ class AICAR_TELEOP:
         rospy.Subscriber("/joint_states", JointState, self.cb_joint_states)
 
         self.cmd_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
-        self.joint_pub = rospy.Publisher("/joint", Float32MultiArray, queue_size=10)
+        self.joint_pub = rospy.Publisher("/arm", Float32MultiArray, queue_size=10)
         self.tool_pub = rospy.Publisher("/tool", Float32, queue_size=10)
 
         self.settings = termios.tcgetattr(sys.stdin)
@@ -124,9 +125,14 @@ class AICAR_TELEOP:
                 status += 1
 
             elif key == 'h':
+                self.j1_rad = 0.0
+                self.j2_rad = 0.0
+                self.arm_info()
+                status += 1
+                        
+            elif key == 'g':
                 self.j1_rad = 1.57
                 self.j2_rad = -1.57
-                self.tool_rad = 0.79
                 self.arm_info()
                 status += 1
 
