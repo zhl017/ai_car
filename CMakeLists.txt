@@ -161,6 +161,9 @@ catkin_install_python(PROGRAMS
   scripts/aicar_teleop.py
   scripts/aicar_imu.py
   scripts/aicar_odom.py
+  scripts/cv_detect.py
+  scripts/multi_goal.py
+  scripts/pick_and_place.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
