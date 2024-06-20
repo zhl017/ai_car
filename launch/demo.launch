@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+
+    <node name="pick_and_place" pkg="ai_car" type="pick_and_place.py" output="screen"/>
+
+    <node name="multi_goal" pkg="ai_car" type="multi_goal.py" output="screen"/>
+    
+
+</launch>
