@@ -35,7 +35,7 @@ class CV_DETECTOR:
             gray_blurred = cv2.GaussianBlur(gray, (5, 5), 2)
 
             circles = cv2.HoughCircles(gray_blurred, cv2.HOUGH_GRADIENT_ALT, dp=1.5, minDist=200,
-                                    param1=100, param2=0.8, minRadius=10, maxRadius=0)
+                                    param1=100, param2=0.9, minRadius=8, maxRadius=0)
 
             if circles is not None:
                 circles = np.uint16(np.around(circles))
@@ -80,32 +80,6 @@ class CV_DETECTOR:
                 self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
             except CvBridgeError as e:
                 rospy.logerr(e)
-
-    def got_ball(self, method='got'):
-        arm = Float32MultiArray()
-        arm.data.append(1.57)
-        arm.data.append(-0.5)
-        self.arm_pub.publish(arm)
-        rospy.sleep(2)
-        arm = Float32MultiArray()
-        arm.data.append(0.8)
-        arm.data.append(-0.5)
-        self.arm_pub.publish(arm)
-        rospy.sleep(2)
-        tool = Float32()
-        if method == 'got':
-            tool.data = -0.2
-        elif method == 'release':
-            tool.data = 0.71
-        self.tool_pub.publish(tool)
-        rospy.sleep(2)
-        arm = Float32MultiArray()
-        arm.data.append(1.57)
-        arm.data.append(-1.57)
-        self.arm_pub.publish(arm)
-        rospy.sleep(2)
-        return True
-
 
 if __name__ == '__main__':
     rospy.init_node('cv_detector')

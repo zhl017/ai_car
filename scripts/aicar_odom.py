@@ -48,6 +48,11 @@ class AICAR_ODOM:
 
     def cb_calc_odom(self, msg):
         if self.imu_is_reset:
+            if msg.data[0] == 0 and msg.data[1] == 0:
+                ang = 0.0
+            else:
+                ang = self.imu_ang
+            
             current_time = rospy.Time.now()
 
             dt = (current_time - self.last_time).to_sec()
@@ -59,7 +64,6 @@ class AICAR_ODOM:
             # calc linear & angular
             lin = (l_distance + r_distance) / (2.0 * dt)
             # ang = (r_distance - l_distance) / (WHEEL_SEPARATION * dt)
-            ang = self.imu_ang
 
             # calc mov x, y
             delta_x = lin * cos(self.theta) * dt

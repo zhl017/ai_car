@@ -39,7 +39,7 @@ class MPU9250:
                 imu_data.header.frame_id = "imu"
                 
                 ang = gyro[2]
-                if abs(ang) <= 0.003 or abs(ang) >= 2: ang = 0
+                if abs(ang) >= 2.0: ang = 0.0
                 imu_data.angular_velocity.z = -ang
 
                 imu_pub.publish(imu_data)

@@ -2,12 +2,11 @@
 
 import rospy, roslaunch, actionlib
 from actionlib_msgs.msg import *
-from geometry_msgs.msg import Twist, Pose, PoseWithCovarianceStamped, Quaternion, Point
+from geometry_msgs.msg import Twist, PoseWithCovarianceStamped
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from nav_msgs.msg import Odometry
 from std_msgs.msg import Empty, Bool
-from random import sample  
-from math import pow, sqrt  
+from enum import Enum
 
 class AutoGoal():
     def __init__(self):
@@ -26,23 +25,16 @@ class AutoGoal():
         self.pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
         self.pub_init_pose = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=1)
         self.detect_pub = rospy.Publisher('/cv_detect', Empty, queue_size=10)
-        self.pnp = rospy.Publisher('pick_and_place', Bool, queue_size=10)
+        self.pnp = rospy.Publisher('/pick_and_place', Bool, queue_size=10)
 
         # Action
         self.move_base = actionlib.SimpleActionClient('/move_base', MoveBaseAction)
+        self.move_base.wait_for_server()
 
         # Param
         self.is_initialed = False
 
         self.rest_time = rospy.get_param("~rest_time", 1)
-
-        goal_states = ['PENDING', 'ACTIVE', 'PREEMPTED','SUCCEEDED',  
-                       'ABORTED', 'REJECTED','PREEMPTING', 'RECALLING',   
-                       'RECALLED','LOST']  
-         
-        locations = dict()
-        locations['1'] = Pose(Point(1.7, 0, 0.00), Quaternion(0.000, 0.000, 0.000, 1.000))  
-        locations['2'] = Pose(Point(1.7, 0, 0.00), Quaternion(0.000, 0.000, -0.99, 0.000))
 
         # First time to initial pose
         rospy.sleep(3)
@@ -51,83 +43,108 @@ class AutoGoal():
             if self.is_initialed == True:
                 break
         rospy.loginfo('DONE')
-        rospy.sleep(5)
+        rospy.sleep(3)
 
-        self.path_1 = True
+        # self.p1 = True
+        # self.pick = False
+        # self.p2 = False
+        # self.place = False
+        # self.p3 = False
+        
+        self.path = Enum('path', 'idle p1 p2 p3')
+        self.current_path = self.path.p1.value
+        path1 = [2.5, 0.0, 0.0, 1.0]
+        path2 = [2.5, 0.0, -0.7, 0.7]
+        path3 = [2.5, -1.0, 1.0, 0.0]
         self.pick = False
-        self.path_2 = False
         self.place = False
+        goal = MoveBaseGoal()
+        goal.target_pose.header.frame_id = 'map'
   
         # Begin the main loop and run through a sequence of locations  
         while not rospy.is_shutdown(): 
+            
+            if self.current_path == self.path.p1.value:
+                p = path1
+            elif self.current_path == self.path.p2.value:
+                p = path2
+            elif self.current_path == self.path.p3.value:
+                p = path3
+            else:
+                p = None
 
-            if self.path_1:
-                # Set up the next goal location  
-                self.goal = MoveBaseGoal()    
-                self.goal.target_pose.header.frame_id = 'map'  
-                self.goal.target_pose.header.stamp = rospy.Time.now() 
-                self.goal.target_pose.pose = locations['1'] 
+            rospy.loginfo(self.current_path)
+            rospy.loginfo(p)
 
-                # Let the user know where the robot is going next  
-                rospy.loginfo("Going to: path 1")  
-                # Start the robot toward the next location  
-                self.move_base.send_goal(self.goal)  
+            if p != None:
+                goal.target_pose.header.stamp = rospy.Time.now()
+                goal.target_pose.pose.position.x = p[0]
+                goal.target_pose.pose.position.y = p[1]
+                goal.target_pose.pose.orientation.z = p[2]
+                goal.target_pose.pose.orientation.w= p[3]
 
-                # Allow 5 minutes to get there  
-                finished_within_time = self.move_base.wait_for_result(rospy.Duration(300))  
+                self.move_base.send_goal(goal)
+                self.move_base.wait_for_result()
 
-                # Check for success or failure  
-                if not finished_within_time:  
-                    self.move_base.cancel_goal()  
-                    rospy.loginfo("Timed out achieving goal")  
-                else:  
-                    state = self.move_base.get_state()  
-                    if state == GoalStatus.SUCCEEDED:  
-                        rospy.loginfo("Goal succeeded!")
-                        self.path_1 = False
-                        self.pick = True
-                        self.detect_pub.publish()
-                    else:  
-                        rospy.loginfo("Goal failed with error code: " + str(goal_states[state]))  
-                rospy.sleep(self.rest_time)
+                if self.current_path == self.path.p1.value:
+                    self.current_path = self.path.idle.value
+                    self.pick = True
+                    self.detect_pub.publish()
+                elif self.current_path == self.path.p2.value:
+                    self.current_path = self.path.p3.value
+                elif self.current_path == self.path.p3.value:
+                    self.current_path = self.path.idle.value
+                    self.place = True
+                    self.pnp.publish(False)
 
-            if self.path_2:
-                # Set up the next goal location  
-                self.goal = MoveBaseGoal()    
-                self.goal.target_pose.header.frame_id = 'map'  
-                self.goal.target_pose.header.stamp = rospy.Time.now() 
-                self.goal.target_pose.pose = locations['2'] 
-
-                # Let the user know where the robot is going next  
-                rospy.loginfo("Going to: path 2")  
-                # Start the robot toward the next location  
-                self.move_base.send_goal(self.goal)  
-
-                # Allow 5 minutes to get there  
-                finished_within_time = self.move_base.wait_for_result(rospy.Duration(300))  
-
-                # Check for success or failure  
-                if not finished_within_time:  
-                    self.move_base.cancel_goal()  
-                    rospy.loginfo("Timed out achieving goal")  
-                else:  
-                    state = self.move_base.get_state()  
-                    if state == GoalStatus.SUCCEEDED:  
-                        rospy.loginfo("Goal succeeded!")
-                        self.path_2 = False
-                        self.place = True
-                        self.pnp.publish(False)
-                    else:  
-                        rospy.loginfo("Goal failed with error code: " + str(goal_states[state]))  
-                rospy.sleep(self.rest_time)
+            # if self.p1:
+            #     self.p1 = False
+            #     goal = MoveBaseGoal()
+            #     goal.target_pose.header.frame_id = 'map'
+            #     goal.target_pose.header.stamp = rospy.Time.now()
+            #     goal.target_pose.pose.position.x = 0.9
+            #     goal.target_pose.pose.position.y = 0.0
+            #     goal.target_pose.pose.orientation.w = 1.0
+            #     self.move_base.send_goal(goal)
+            #     self.move_base.wait_for_result()
+            #     rospy.loginfo("path 1 GOAL")
+            #     self.pick = True
+            #     self.detect_pub.publish()
+            # if self.p2:
+            #     self.p2 = False
+            #     goal = MoveBaseGoal()
+            #     goal.target_pose.header.frame_id = 'map'
+            #     goal.target_pose.header.stamp = rospy.Time.now()
+            #     goal.target_pose.pose.position.x = 0.9
+            #     goal.target_pose.pose.position.y = 0.0
+            #     goal.target_pose.pose.orientation.z = 0.7
+            #     goal.target_pose.pose.orientation.w = 0.7
+            #     self.move_base.send_goal(goal)
+            #     self.move_base.wait_for_result()
+            #     rospy.loginfo("path 2 GOAL")
+            #     self.p3 = True
+            # if self.p3:
+            #     self.p3 = False
+            #     goal = MoveBaseGoal()
+            #     goal.target_pose.header.frame_id = 'map'
+            #     goal.target_pose.header.stamp = rospy.Time.now()
+            #     goal.target_pose.pose.position.x = 0.7
+            #     goal.target_pose.pose.position.y = 1.8
+            #     goal.target_pose.pose.orientation.z = -0.7
+            #     goal.target_pose.pose.orientation.w = -0.7
+            #     self.move_base.send_goal(goal)
+            #     self.move_base.wait_for_result()
+            #     rospy.loginfo("path 3 GOAL")
+            #     self.place = True
+            #     self.pnp.publish(False)
 
     def cbNext(self, msg):
         if self.pick:
-            self.path_2 = True
             self.pick = False
+            self.current_path = self.path.p2.value
         if self.place:
-            self.path_1 = True
             self.place = False
+            self.current_path = self.path.p1.value
 
 
     def fnLaunch(self):
@@ -141,7 +158,7 @@ class AutoGoal():
         initialPose.header.frame_id = 'map'
         initialPose.header.stamp = rospy.Time.now()
         # initialPose.pose.pose = self.odom_msg.pose.pose
-        initialPose.pose.pose.position.x = 1.0
+        initialPose.pose.pose.position.x = 0.0
         initialPose.pose.pose.position.y = 0.0
         initialPose.pose.pose.position.z = 0.0
         initialPose.pose.pose.orientation.x = 0.0

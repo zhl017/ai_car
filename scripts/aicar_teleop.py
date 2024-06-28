@@ -36,8 +36,7 @@ Arm control:
      Tool  : m(-), ,(+)
 
 h : Arm Home Pose
-g : Arm Sleep Pose
-s : Force Stop
+s : force stop
 
 CTRL-C to quit
 """
@@ -53,7 +52,7 @@ class AICAR_TELEOP:
         rospy.Subscriber("/joint_states", JointState, self.cb_joint_states)
 
         self.cmd_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=10)
-        self.joint_pub = rospy.Publisher("/arm", Float32MultiArray, queue_size=10)
+        self.arm_pub = rospy.Publisher("/arm", Float32MultiArray, queue_size=10)
         self.tool_pub = rospy.Publisher("/tool", Float32, queue_size=10)
 
         self.settings = termios.tcgetattr(sys.stdin)
@@ -125,14 +124,9 @@ class AICAR_TELEOP:
                 status += 1
 
             elif key == 'h':
-                self.j1_rad = 0.0
-                self.j2_rad = 0.0
-                self.arm_info()
-                status += 1
-                        
-            elif key == 'g':
                 self.j1_rad = 1.57
                 self.j2_rad = -1.57
+                self.tool_rad = 0.79
                 self.arm_info()
                 status += 1
 
@@ -169,10 +163,10 @@ class AICAR_TELEOP:
 
     def arm_info(self):
         print('[  ARM  ] j1 : %.2f, j2 : %.2f, tool : %.2f'%(self.j1_rad, self.j2_rad, self.tool_rad))
-        joint = Float32MultiArray()
-        joint.data.append(self.j1_rad)
-        joint.data.append(self.j2_rad)
-        self.joint_pub.publish(joint)
+        arm = Float32MultiArray()
+        arm.data.append(self.j1_rad)
+        arm.data.append(self.j2_rad)
+        self.arm_pub.publish(arm)
         tool = Float32()
         tool.data = self.tool_rad
         self.tool_pub.publish(tool)
