@@ -17,8 +17,6 @@ RIGHT_ID = 2
 REAR_LEFT_ID = 3
 REAR_RIGHT_ID = 4
 
-XM_TICK2RAD = 0.001533981
-
 class Wheel_Controller():
     def __init__(self, port):
         self.port = port
@@ -65,6 +63,7 @@ class Wheel_Controller():
         get_data[3], result, error = self.packet.read4ByteTxRx(self.port, REAR_RIGHT_ID, XM_PRESENT_POSITION_ADDRESS)
         
         get_data = np.int32(get_data)
+        # get_data = np.array(get_data, dtype=np.uint32).view(np.int32).tolist()
         return get_data
     
 if __name__ == '__main__':
