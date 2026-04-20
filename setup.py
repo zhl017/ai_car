@@ -26,10 +26,6 @@ setup(
     license='TODO: License declaration',
     entry_points={
         'console_scripts': [
-            'aicar_base = ai_car.aicar_base:main',
-            'aicar_teleop = ai_car.aicar_teleop:main',
-            'aicar_imu = ai_car.aicar_imu:main',
-            'aicar_odom = ai_car.aicar_odom:main',
         ],
     },
 )
