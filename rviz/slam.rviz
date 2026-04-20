@@ -1,0 +1,64 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.7
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic:
+        Value: /map
+      Value: true
+    - Alpha: 1.0
+      Autocompute Intensity Bounds: true
+      Class: rviz_default_plugins/LaserScan
+      Color: 255; 0; 0
+      Enabled: true
+      Name: LaserScan
+      Size (m): 0.05
+      Topic:
+        Value: /scan
+      Value: true
+    - Alpha: 1.0
+      Class: rviz_default_plugins/RobotModel
+      Description Topic:
+        Value: /robot_description
+      Enabled: true
+      Name: RobotModel
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Name: TF
+      Value: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: map
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/XYOrbit
+      Distance: 1.910049319267273
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: -0.02010004222393036
+        Y: -0.467065691947937
+        Z: -4.76837158203125e-7
+      Focal Shape Fixed Size: false
+      Focal Shape Size: 0.05000000074505806
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.7953976392745972
+      Target Frame: <Fixed Frame>
+      Value: XYOrbit (rviz)
+      Yaw: 4.793606281280518
+    Saved: ~
