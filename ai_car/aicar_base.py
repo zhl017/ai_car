@@ -23,6 +23,22 @@ def constrain(vel):
     if vel > LIMIT_VEL: return LIMIT_VEL
     return vel
 
+def calc_diff(current, last, total, threshold=2*XM_TICK2RAD):
+    """
+    計算 dxl 的差分與累計值
+    current: 當前讀取值
+    last: 上一次讀取值
+    total: 累計角度
+    threshold: 小於此閾值視為 0（抖動過濾）
+    返回: diff, 更新後的 last, 更新後的 total
+    """
+    diff = (current - last) * XM_TICK2RAD
+    if abs(diff) <= threshold:
+        diff = 0.0
+    total += diff
+    last = current
+    return diff, last, total
+
 class AICAR_BASE(Node):
     def __init__(self):
         super().__init__('aicar_base')
@@ -181,29 +197,13 @@ class AICAR_BASE(Node):
             self.last_rear_right = self.wheel_states[3]
             self.state_is_reset = True
 
-        current = self.wheel_states[0]
-        self.diff_left = (current - self.last_left) * XM_TICK2RAD
-        self.last_left = current
-        if abs(self.diff_left) <= 2 * XM_TICK2RAD: self.diff_left = 0.0
-        self.total_left += self.diff_left
-        
-        current = self.wheel_states[1]
-        self.diff_right = (current - self.last_right) * XM_TICK2RAD
-        self.last_right = current
-        if abs(self.diff_right) <= 2 * XM_TICK2RAD: self.diff_right = 0.0
-        self.total_right += self.diff_right
-        
-        current = self.wheel_states[2]
-        self.diff_rear_left = (current - self.last_rear_left) * XM_TICK2RAD
-        self.last_rear_left = current
-        if abs(self.diff_rear_left) <= 2 * XM_TICK2RAD: self.diff_rear_left = 0.0
-        self.total_rear_left += self.diff_rear_left
-        
-        current = self.wheel_states[3]
-        self.diff_rear_right = (current - self.last_rear_right) * XM_TICK2RAD
-        self.last_rear_right = current
-        if abs(self.diff_rear_right) <= 2 * XM_TICK2RAD: self.diff_rear_right = 0.0
-        self.total_rear_right += self.diff_rear_right
+        self.diff_left, self.last_left, self.total_left = calc_diff(self.wheel_states[0], self.last_left, self.total_left)
+
+        self.diff_right, self.last_right, self.total_right = calc_diff(self.wheel_states[1], self.last_right, self.total_right)
+
+        self.diff_rear_left, self.last_rear_left, self.total_rear_left = calc_diff(self.wheel_states[2], self.last_rear_left, self.total_rear_left)
+
+        self.diff_rear_right, self.last_rear_right, self.total_rear_right = calc_diff(self.wheel_states[3], self.last_rear_right, self.total_rear_right)
 
     def fn_shutdown(self):
         print('Exiting ...')
