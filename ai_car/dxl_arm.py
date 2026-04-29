@@ -8,7 +8,7 @@ DXL_PORT = PortHandler('/dev/ttyUSB0')
 
 ARM_JOINT_1 = 11            # 812 ~ 512     0 - 90
 ARM_JOINT_2 = 12            # 512 - 212     0 - 90
-ARM_TOOL = 13               # 450 - 612     0 - 90
+ARM_TOOL = 13               # 420 - 612     0 - 90
 
 AX_TICK2RAD = 0.005113269      # 300 / 1024 / 180 * pi
 AX_TICK2DEG = 0.29296875       # 300 / 1024
