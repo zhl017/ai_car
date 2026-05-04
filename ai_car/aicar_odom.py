@@ -14,8 +14,6 @@ from std_msgs.msg import Empty, Float32MultiArray
 import tf2_ros
 
 WHEEL_RADIUS    = 0.033
-WHEEL_SEPARATION = 0.08
-
 
 class AICAR_ODOM(Node):
     def __init__(self):
