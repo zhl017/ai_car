@@ -9,8 +9,8 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import JointState
 
 from dynamixel_sdk import PortHandler
-from dynamixel_wheel import Wheel_Controller
-from dynamixel_arm import Arm_Controller
+from ai_car.dxl_wheel import Wheel_Controller
+from ai_car.dxl_arm import Arm_Controller
 
 BAUD_RATE = 1000000
 WHEEL_SEPERATION = 0.16

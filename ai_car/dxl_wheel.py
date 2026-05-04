@@ -51,6 +51,7 @@ class Wheel_Controller():
 
     def set_torque(self, set_data):
         set_data = to_uint32(set_data)
+
         self.packet.write1ByteTxRx(self.port, LEFT_ID, XM_TORQUE_ADDRESS, set_data)
         self.packet.write1ByteTxRx(self.port, RIGHT_ID, XM_TORQUE_ADDRESS, set_data)
         self.packet.write1ByteTxRx(self.port, REAR_LEFT_ID, XM_TORQUE_ADDRESS, set_data)
@@ -58,6 +59,7 @@ class Wheel_Controller():
 
     def set_wheel(self, set_data):
         set_data = [to_uint32(x) for x in set_data]
+
         self.packet.write4ByteTxRx(self.port, LEFT_ID, XM_GOAL_VELOCITY_ADDRESS, set_data[0])
         self.packet.write4ByteTxRx(self.port, RIGHT_ID, XM_GOAL_VELOCITY_ADDRESS, set_data[1])
         self.packet.write4ByteTxRx(self.port, REAR_LEFT_ID, XM_GOAL_VELOCITY_ADDRESS, set_data[0])
@@ -65,13 +67,12 @@ class Wheel_Controller():
 
     def get_wheel(self):
         get_data = [0,0,0,0]
+
         get_data[0], result, error = self.packet.read4ByteTxRx(self.port, LEFT_ID, XM_PRESENT_POSITION_ADDRESS)
         get_data[1], result, error = self.packet.read4ByteTxRx(self.port, RIGHT_ID, XM_PRESENT_POSITION_ADDRESS)
         get_data[2], result, error = self.packet.read4ByteTxRx(self.port, REAR_LEFT_ID, XM_PRESENT_POSITION_ADDRESS)
         get_data[3], result, error = self.packet.read4ByteTxRx(self.port, REAR_RIGHT_ID, XM_PRESENT_POSITION_ADDRESS)
         
-        # get_data = np.int32(get_data).tolist()
-        # get_data = np.array(get_data, dtype=np.uint32).view(np.int32).tolist()
         get_data = [to_int32(x) for x in get_data]
 
         return get_data
@@ -85,8 +86,5 @@ if __name__ == '__main__':
 
         wheel = Wheel_Controller(DXL_PORT)
         
-        while True:
-            wheel.set_wheel([20, -20])
-            time.sleep(1)
     except KeyboardInterrupt:
-        wheel.set_wheel([0,0])
+        Wheel_Controller(DXL_PORT).reset()

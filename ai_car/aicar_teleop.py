@@ -59,7 +59,7 @@ class AICAR_TELEOP(Node):
 
         # -- Publishers --
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 1)
-        self.arm_pub = self.create_publisher(Int32MultiArray, '/arm', 1)
+        self.joint_pub = self.create_publisher(Int32MultiArray, '/joint', 1)
         self.tool_pub = self.create_publisher(Int32, '/tool', 1)
 
         # -- Param --
@@ -100,11 +100,11 @@ class AICAR_TELEOP(Node):
         twist.angular.z = self.ang_vel
         self.cmd_pub.publish(twist)
 
-    def fn_arm_pub(self):
+    def fn_joint_pub(self):
         print('[  ARM  ] j1 : %d, j2 : %d, tool : %d' % (self.j1, self.j2, self.tool))
-        arm = Int32MultiArray()
-        arm.data = [self.j1, self.j2]
-        self.arm_pub.publish(arm)
+        joint = Int32MultiArray()
+        joint.data = [self.j1, self.j2]
+        self.joint_pub.publish(joint)
 
         tool = Int32()
         tool.data = self.tool

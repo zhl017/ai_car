@@ -13,14 +13,12 @@ AX_GOAL_POSITION = 30
 AX_MOVING_SPEED = 32
 AX_PRESENT_POSITION = 36
 
-ARM_JOINT_1 = 11            # 812 ~ 512     0 - 90
-ARM_JOINT_2 = 12            # 512 - 212     0 - 90
-ARM_TOOL = 13               # 450 - 612    -0.32 - 0.51
+ARM_JOINT_1 = 11            # 812 ~ 512
+ARM_JOINT_2 = 12            # 512 - 212
+ARM_TOOL = 13               # 420 - 612
 
-HOME_POSE = [90, 90]
-
-SLEEP_POSE = [0, 0]
-SLEEP_TOOl = 10
+HOME_JOINT = [0, 0]
+HOME_TOOL = 0
 
 AX_TICK2RAD = 0.005113269      # 300 / 1024 / 180 * pi
 AX_TICK2DEG = 0.29296875       # 300 / 1024
@@ -45,11 +43,12 @@ class Arm_Controller():
         self.reset()
 
     def reset(self):
-        self.set_joint(SLEEP_POSE)
-        self.set_tool(SLEEP_TOOl)
+        self.set_joint(HOME_JOINT)
+        self.set_tool(HOME_TOOL)
         
     def set_torque(self, set_data):
         set_data = np.int32(set_data)
+
         self.packet.write1ByteTxRx(self.port, ARM_JOINT_1, AX_TORUQE_ADDRESS, set_data)
         self.packet.write1ByteTxRx(self.port, ARM_JOINT_2, AX_TORUQE_ADDRESS, set_data)
         self.packet.write1ByteTxRx(self.port, ARM_TOOL, AX_TORUQE_ADDRESS, set_data)
@@ -58,25 +57,26 @@ class Arm_Controller():
         set_data = [to_uint32(x) for x in set_data]
         set_data[0] = 812 - int(set_data[0] / AX_TICK2DEG)
         set_data[1] = 212 + int(set_data[1] / AX_TICK2DEG)
-        # print(set_data)
+
         self.packet.write2ByteTxRx(self.port, ARM_JOINT_1, AX_GOAL_POSITION, set_data[0])
         self.packet.write2ByteTxRx(self.port, ARM_JOINT_2, AX_GOAL_POSITION, set_data[1])
 
     def set_tool(self, set_data):
         set_data = to_uint32(set_data)
-        set_data = 450 + int(set_data / AX_TICK2DEG)
-        # print(set_data)
+        set_data = 420 + int(set_data / AX_TICK2DEG)
+
         self.packet.write2ByteTxRx(self.port, ARM_TOOL, AX_GOAL_POSITION, set_data)
 
     def get_arm(self):
         get_data = [0, 0, 0]
+        
         get_data[0], result, err = self.packet.read2ByteTxRx(self.port, ARM_JOINT_1, AX_PRESENT_POSITION)
         get_data[1], result, err = self.packet.read2ByteTxRx(self.port, ARM_JOINT_2, AX_PRESENT_POSITION)
         get_data[2], result, err = self.packet.read2ByteTxRx(self.port, ARM_TOOL, AX_PRESENT_POSITION)
 
         get_data[0] = (812 - get_data[0]) * AX_TICK2RAD
         get_data[1] = (get_data[1] - 212) * AX_TICK2RAD
-        get_data[2] = (get_data[2] - 450) * AX_TICK2RAD
+        get_data[2] = (get_data[2] - 420) * AX_TICK2RAD
 
         return get_data
 
@@ -89,12 +89,6 @@ if __name__ == '__main__':
         DXL_PORT.setBaudRate(BAUD_RATE)
 
         arm = Arm_Controller(DXL_PORT)
-        arm.set_joint([45,45])
-        arm.set_tool(45)
-        time.sleep(2)
-        while True:
-            print(arm.get_arm())
-            time.sleep(1)
 
     except KeyboardInterrupt:
-        arm.reset()
+        Arm_Controller(DXL_PORT).reset()
