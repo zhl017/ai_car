@@ -197,13 +197,21 @@ class AICAR_BASE(Node):
             self.last_rear_right = self.wheel_states[3]
             self.state_is_reset = True
 
-        self.diff_left, self.last_left, self.total_left = calc_diff(self.wheel_states[0], self.last_left, self.total_left)
+        self.diff_left, self.last_left, self.total_left = calc_diff(self.wheel_states[0], 
+                                                                    self.last_left, 
+                                                                    self.total_left)
 
-        self.diff_right, self.last_right, self.total_right = calc_diff(self.wheel_states[1], self.last_right, self.total_right)
+        self.diff_right, self.last_right, self.total_right = calc_diff(self.wheel_states[1], 
+                                                                       self.last_right, 
+                                                                       self.total_right)
 
-        self.diff_rear_left, self.last_rear_left, self.total_rear_left = calc_diff(self.wheel_states[2], self.last_rear_left, self.total_rear_left)
+        self.diff_rear_left, self.last_rear_left, self.total_rear_left = calc_diff(self.wheel_states[2], 
+                                                                                   self.last_rear_left, 
+                                                                                   self.total_rear_left)
 
-        self.diff_rear_right, self.last_rear_right, self.total_rear_right = calc_diff(self.wheel_states[3], self.last_rear_right, self.total_rear_right)
+        self.diff_rear_right, self.last_rear_right, self.total_rear_right = calc_diff(self.wheel_states[3], 
+                                                                                      self.last_rear_right, 
+                                                                                      self.total_rear_right)
 
     def fn_shutdown(self):
         print('Exiting ...')

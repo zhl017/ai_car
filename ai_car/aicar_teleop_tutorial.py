@@ -18,7 +18,7 @@ MAX_TOOL = 45; MIN_TOOL = 0
 
 # ── 每次按鍵的步進量 ────────────────────────────────────────
 STEP_LIN = 0.01
-STEP_ANG = 1.0
+STEP_ANG = 0.5
 STEP_ARM = 2
 
 msg = """
@@ -40,9 +40,9 @@ s : force stop
 CTRL-C to quit
 """
 
-def constrain(vel):
-    if vel < -LIMIT_VEL: return -LIMIT_VEL
-    if vel > LIMIT_VEL: return LIMIT_VEL
+def constrain(vel, max, min):
+    if vel < min: return min
+    if vel > max: return max
     return vel
 
 

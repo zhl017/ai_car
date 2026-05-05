@@ -22,7 +22,7 @@ MAX_TOOL = 45
 MIN_TOOL = 0
 
 STEP_LIN = 0.01
-STEP_ANG = 1.0
+STEP_ANG = 0.5
 STEP_ARM = 2
 
 msg = """
@@ -44,9 +44,9 @@ s : force stop
 CTRL-C to quit
 """
 
-def constrain(vel, min_vel, max_vel):
-    if vel < min_vel: return min_vel
-    if vel > max_vel: return max_vel
+def constrain(vel, max, min):
+    if vel < min: return min
+    if vel > max: return max
     return vel
 
 class AICAR_TELEOP(Node):
@@ -119,43 +119,43 @@ class AICAR_TELEOP(Node):
                 key = self.fn_get_key()
  
                 if key == 'w':
-                    self.lin_vel = constrain(self.lin_vel + STEP_LIN, -MAX_LIN_VEL, MAX_LIN_VEL)
+                    self.lin_vel = constrain(self.lin_vel + STEP_LIN, MAX_LIN_VEL, -MAX_LIN_VEL)
                     self.fn_wheel_pub()
                     status += 1
                 elif key == 'x':
-                    self.lin_vel = constrain(self.lin_vel - STEP_LIN, -MAX_LIN_VEL, MAX_LIN_VEL)
+                    self.lin_vel = constrain(self.lin_vel - STEP_LIN, MAX_LIN_VEL, -MAX_LIN_VEL)
                     self.fn_wheel_pub()
                     status += 1
                 elif key == 'a':
-                    self.ang_vel = constrain(self.ang_vel + STEP_ANG, -MAX_ANG_VEL, MAX_ANG_VEL)
+                    self.ang_vel = constrain(self.ang_vel + STEP_ANG, MAX_ANG_VEL, -MAX_ANG_VEL)
                     self.fn_wheel_pub()
                     status += 1
                 elif key == 'd':
-                    self.ang_vel = constrain(self.ang_vel - STEP_ANG, -MAX_ANG_VEL, MAX_ANG_VEL)
+                    self.ang_vel = constrain(self.ang_vel - STEP_ANG, MAX_ANG_VEL, -MAX_ANG_VEL)
                     self.fn_wheel_pub()
                     status += 1
                 elif key == 'u':
-                    self.j1 = constrain(self.j1 + STEP_ARM, MIN_J1, MAX_J1)
+                    self.j1 = constrain(self.j1 + STEP_ARM, MAX_J1, MIN_J1)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'j':
-                    self.j1 = constrain(self.j1 - STEP_ARM, MIN_J1, MAX_J1)
+                    self.j1 = constrain(self.j1 - STEP_ARM, MAX_J1, MIN_J1)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'i':
-                    self.j2 = constrain(self.j2 + STEP_ARM, MIN_J2, MAX_J2)
+                    self.j2 = constrain(self.j2 + STEP_ARM, MAX_J2, MIN_J2)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'k':
-                    self.j2 = constrain(self.j2 - STEP_ARM, MIN_J2, MAX_J2)
+                    self.j2 = constrain(self.j2 - STEP_ARM, MAX_J2, MIN_J2)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'o':
-                    self.tool = constrain(self.tool + STEP_ARM, MIN_TOOL, MAX_TOOL)
+                    self.tool = constrain(self.tool + STEP_ARM, MAX_TOOL, MIN_TOOL)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'l':
-                    self.tool = constrain(self.tool - STEP_ARM, MIN_TOOL, MAX_TOOL)
+                    self.tool = constrain(self.tool - STEP_ARM, MAX_TOOL, MIN_TOOL)
                     self.fn_arm_pub()
                     status += 1
                 elif key == 'h':
