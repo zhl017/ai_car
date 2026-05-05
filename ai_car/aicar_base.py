@@ -175,7 +175,7 @@ class AICAR_BASE(Node):
             self.arm.reset()
             self.wheel.reset()
 
-            self.create_timer(2.0, self.cb_flag)
+            self.flag_timer = self.create_timer(2.0, self.cb_flag)
             self.reset_received = False
 
         if self.torque_received:
@@ -184,6 +184,9 @@ class AICAR_BASE(Node):
 
     def cb_flag(self):
         self.state_is_reset = False
+        self.flag_timer.cancel()
+        self.flag_timer.destroy()
+        
 
     # --- Functions ---
     def fn_update_states(self):
