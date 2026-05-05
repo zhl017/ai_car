@@ -40,9 +40,9 @@ s : force stop
 CTRL-C to quit
 """
 
-def constrain(vel, LIMIT_VEL):
-    if vel < -LIMIT_VEL: return -LIMIT_VEL
-    if vel > LIMIT_VEL: return LIMIT_VEL
+def constrain(vel, max, min):
+    if vel < min: return min
+    if vel > max: return max
     return vel
 
 
