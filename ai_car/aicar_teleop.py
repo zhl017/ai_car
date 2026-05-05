@@ -40,7 +40,7 @@ s : force stop
 CTRL-C to quit
 """
 
-def constrain(vel):
+def constrain(vel, LIMIT_VEL):
     if vel < -LIMIT_VEL: return -LIMIT_VEL
     if vel > LIMIT_VEL: return LIMIT_VEL
     return vel
@@ -58,10 +58,10 @@ class AICAR_TELEOP(Node):
         # --- Publishers ---
         # TODO: 建立以下三個 Publisher
         #   /cmd_vel  (Twist)           queue=1  → self.cmd_pub
-        #   /arm      (Int32MultiArray) queue=1  → self.arm_pub
+        #   /joint      (Int32MultiArray) queue=1  → self.joint_pub
         #   /tool     (Int32)           queue=1  → self.tool_pub
         self.cmd_pub  = None
-        self.arm_pub  = None
+        self.joint_pub  = None
         self.tool_pub = None
 
         # --- 狀態變數 ---
@@ -110,7 +110,7 @@ class AICAR_TELEOP(Node):
         """
         TODO:
         1. 印出 '[  ARM  ] j1 : %d, j2 : %d, tool : %d'
-        2. 建立 Int32MultiArray，填入 [j1, j2] 並發布到 /arm
+        2. 建立 Int32MultiArray，填入 [j1, j2] 並發布到 /joint
         3. 建立 Int32，填入 tool 並發布到 /tool
         """
         pass
