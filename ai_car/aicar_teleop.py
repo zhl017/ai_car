@@ -19,7 +19,7 @@ MAX_TOOL = 45; MIN_TOOL = 0
 # ── 每次按鍵的步進量 ────────────────────────────────────────
 STEP_LIN = 0.01
 STEP_ANG = 1.0
-STEP_ARM = 2
+STEP_ARM = 0.5
 
 msg = """
 Control Your AICAR!
