@@ -78,14 +78,16 @@ class AICAR_TELEOP(Node):
         TODO: 只在 get_arm_data 為 False 時處理：
         1. 從 msg.position[4~6] 讀取弧度值，換算成整數角度（* 180 / pi）
            分別存入 self.j1, self.j2, self.tool
-        2. 印出 '[ ARM  ] init : j1=..., j2=..., tool=...'
+        2. 印出 '[ ARM ] init : j1=..., j2=..., tool=...'
         3. 設定 get_arm_data = True
         """
         pass
 
     def cb_reset(self, msg):
         """
-        TODO: 將 j1, j2, tool, lin_vel, ang_vel 全部歸零。
+        TODO:
+        1. 印出 '[ SET ] TELEOP reset'
+        2. 將 j1, j2, tool, lin_vel, ang_vel 全部歸零。
         """
         pass
 
