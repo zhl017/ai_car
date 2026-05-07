@@ -75,10 +75,11 @@ class AICAR_TELEOP(Node):
             self.j1 = int(msg.position[4] * 180 / math.pi)
             self.j2 = int(msg.position[5] * 180 / math.pi)
             self.tool = int(msg.position[6] * 180 / math.pi)
-            print(f'[ ARM  ] init : j1={self.j1}, j2={self.j2}, tool={self.tool}')
+            self.get_logger().info(f'[ ARM ] init : j1={self.j1}, j2={self.j2}, tool={self.tool}')
             self.get_arm_data = True
 
     def cb_reset(self, msg):
+        self.get_logger().info('[ SET ] TELEOP reset')
         self.j1 = 0
         self.j2 = 0
         self.tool = 0
@@ -94,14 +95,14 @@ class AICAR_TELEOP(Node):
         return key
 
     def fn_wheel_pub(self):
-        print('[ WHEEL ] linear : %.2f, angular : %.2f' % (self.lin_vel, self.ang_vel))
+        self.get_logger().info('[ WHEEL ] linear : %.2f, angular : %.2f' % (self.lin_vel, self.ang_vel))
         twist = Twist()
         twist.linear.x  = self.lin_vel
         twist.angular.z = self.ang_vel
         self.cmd_pub.publish(twist)
 
     def fn_joint_pub(self):
-        print('[  ARM  ] j1 : %d, j2 : %d, tool : %d' % (self.j1, self.j2, self.tool))
+        self.get_logger().info('[  ARM  ] j1 : %d, j2 : %d, tool : %d' % (self.j1, self.j2, self.tool))
         joint = Int32MultiArray()
         joint.data = [self.j1, self.j2]
         self.joint_pub.publish(joint)
