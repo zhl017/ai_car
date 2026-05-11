@@ -64,8 +64,8 @@ class AICAR_BASE(Node):
         self.create_subscription(Twist, '/cmd_vel', self.cb_cmd, 1)
 
         # --- Publishers ---
-        self.joint_states_pub = self.create_publisher(JointState, '/joint_states', 1)
-        self.diff_rad_pub = self.create_publisher(Float32MultiArray, '/diff_rad', 1)
+        self.joint_states_pub = self.create_publisher(JointState, '/joint_states', 10)
+        self.diff_rad_pub = self.create_publisher(Float32MultiArray, '/diff_rad', 10)
 
         # --- JointState ---
         self.joint_states = JointState()
