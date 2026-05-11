@@ -43,7 +43,7 @@ class AICAR_BASE(Node):
         #   /reset        (Empty)            → cb_reset
         #   /torque       (Int8)             → cb_torque
         #   /tool         (Int32)            → cb_tool
-        #   /arm          (Int32MultiArray)  → cb_joint
+        #   /joint        (Int32MultiArray)  → cb_joint
         #   /cmd_vel      (Twist)            → cb_cmd
 
         # --- Publishers ---
