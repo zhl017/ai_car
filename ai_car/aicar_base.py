@@ -60,7 +60,7 @@ class AICAR_BASE(Node):
         self.create_subscription(Empty, '/reset', self.cb_reset, 1)
         self.create_subscription(Int8, '/torque', self.cb_torque, 1)
         self.create_subscription(Int32, '/tool', self.cb_tool, 1)
-        self.create_subscription(Int32MultiArray, '/arm', self.cb_joint, 1)
+        self.create_subscription(Int32MultiArray, '/joint', self.cb_joint, 1)
         self.create_subscription(Twist, '/cmd_vel', self.cb_cmd, 1)
 
         # --- Publishers ---
