@@ -34,7 +34,7 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution([pkg_nav2_bringup, 'launch', 'localization_launch.py'])),
             launch_arguments={
-                'map': os.path.join(pkg_ai_car, 'map', 'map.yaml'),
+                'map': os.path.join(os.path.expanduser('~'), 'map.yaml',
                 'params_file': os.path.join(pkg_ai_car, 'config', 'localization.yaml'),
                 'use_sim_time': 'False',
             }.items()
