@@ -59,10 +59,8 @@ class LIDAR_SUB(Node):
         if 0.4 <=detect_range <= 0.6:
             cmd.linear.x = 0.05
             if right_range < left_range and abs(right_range - left_range) > 0.2:
-                cmd.linear.x = 0.0
                 cmd.angular.z = -0.2
             elif right_range > left_range and abs(right_range - left_range) > 0.2:
-                cmd.linear.x = 0.0
                 cmd.angular.z = 0.2
             else:
                 cmd.angular.z = 0.0
