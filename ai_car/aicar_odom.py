@@ -38,6 +38,7 @@ class AICAR_ODOM(Node):
 
         # --- TF Broadcaster ---
         # TODO: 建立 tf2_ros.TransformBroadcaster 實例，指定給 self.broadcaster
+        self.broadcaster = None
 
         # --- Odometry 初始化 ---
         self.odom = Odometry()
