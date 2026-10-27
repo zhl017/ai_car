@@ -14,6 +14,7 @@ from std_msgs.msg import Empty, Float32MultiArray
 import tf2_ros
 
 WHEEL_RADIUS    = 0.033
+WHEEL_SEPERATION= 0.16
 
 class AICAR_ODOM(Node):
     def __init__(self):
@@ -77,6 +78,9 @@ class AICAR_ODOM(Node):
         r_distance = msg.data[1] * WHEEL_RADIUS
 
         lin = (l_distance + r_distance) / (2.0 * dt)
+
+        # 純 Odom 計算 ang
+        ang = (r_distance - l_distance) / (WHEEL_SEPERATION * dt)
 
         delta_x     = lin * cos(self.theta) * dt
         delta_y     = lin * sin(self.theta) * dt
